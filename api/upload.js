@@ -49,7 +49,7 @@ async function getDropboxAccessToken(){
   return data.access_token;
 }
 
-// 비-ASCII를 \uXXXX로 이스케이프해 ASCII-only JSON을 만들기 (헤더 안전)
+// 비-ASCII를 \uXXXX로 이스케이프해 ASCII-only JSON 만들기 (헤더 안전)
 function asciiSafeJson(obj){
   const s = JSON.stringify(obj);
   return s.replace(/[\u007F-\uFFFF]/g, ch =>
@@ -117,22 +117,9 @@ export default async function handler(req, res){
     const dropboxPath = `${basePath}/${baseName}.${ext}`;
 
     const token = await getDropboxAccessToken();
-
     await uploadToDropbox(token, dropboxPath, buf);
 
-    // 메타 로그(JSON)
-    const meta = {
-      uploaded_at: new Date().toISOString(),
-      vet, patient, owner, title, date: dateStr,
-      original_filename: f.originalFilename || null,
-      size_bytes: f.size,
-      mime: f.mimetype || null,
-      saved_path: dropboxPath,
-      client_ip: req.headers["x-forwarded-for"] || req.socket?.remoteAddress || null,
-      user_agent: req.headers["user-agent"] || null
-    };
-    const metaBuf = Buffer.from(JSON.stringify(meta, null, 2), "utf-8");
-    await uploadToDropbox(token, `${basePath}/${baseName}.json`, metaBuf);
+    // ✅ 메타 JSON 업로드 완전 제거 (아래 블록 삭제됨)
 
     res.status(200).json({ ok:true, path: dropboxPath });
   }catch(e){
