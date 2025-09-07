@@ -82,11 +82,27 @@ export default async function handler(req, res){
     if(req.method === "OPTIONS"){ res.status(200).end(); return; }
     if(req.method !== "POST"){ res.status(405).json({ok:false, error:"Method not allowed"}); return; }
 
-    // ---- parse form ----
-    const form = formidable({ multiples:false, maxFileSize: MAX_FILE_BYTES+1024*1024 /*조금 여유*/ });
-    const { fields, files } = await new Promise((resolve,reject)=>{
-      form.parse(req,(err,fields,files)=> err?reject(err):resolve({fields,files}));
-    });
+  const form = formidable({
+  multiples: false,
+  maxFileSize: MAX_FILE_BYTES + 1024 * 1024, // 여유 1MB
+  uploadDir: '/tmp',          // 서버리스 환경에서 안전한 임시폴더
+  keepExtensions: true        // 확장자 유지
+});
+
+const { fields, files } = await new Promise((resolve, reject) => {
+  form.parse(req, (err, fields, files) => err ? reject(err) : resolve({ fields, files }));
+});
+
+// files.file 이 단일 객체/배열/키가 다른 경우 모두 커버
+let fileField = files?.file ?? files?.['file'] ?? Object.values(files || {})[0];
+const f = Array.isArray(fileField) ? fileField[0] : fileField;
+
+if (!f || !f.filepath) {
+  return res.status(400).json({ ok:false, error: "업로드된 파일을 찾을 수 없습니다(file.filepath 없음)" });
+}
+
+// 이제 안전하게 읽기
+const buf = await readFile(f.filepath);
 
     const pin = clean(fields.pin);
     if(PIN_REQUIRED){
