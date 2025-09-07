@@ -3,224 +3,130 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
-  <title>백산 이미지 업로더</title>
+  <title>BAEKSAN 이미지 업로더</title>
 
   <!-- 모바일 웹앱 메타 -->
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#111">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <style>
     :root{
-      --bg:#f7f8fa; --fg:#0b0c0f; --muted:#677085; --line:#e6e8ee;
-      --brand:#2e6bff; --brand-weak:#e7efff; --ok:#0ea565; --err:#d72638; --warn:#b26a00;
+      --bg:#0b0b0c; --fg:#f2f3f5; --muted:#a0a4ab; --line:#1f2126;
+      --brand:#6aa1ff; --ok:#34c759; --err:#ff453a; --warn:#ffcc00;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; background:var(--bg); color:var(--fg);
-      font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    }
-    .wrap{
-      max-width:720px; margin:0 auto; padding:10px 12px 12px;
-      display:flex; flex-direction:column; min-height:100%;
-      gap:10px;
-    }
-
-    /* 헤더 */
-    .header{display:flex; align-items:center; justify-content:space-between; gap:8px}
-    .title{font-weight:800; font-size:18px; letter-spacing:-0.2px; white-space:nowrap}
-    .pinbtn{
-      border:1px solid var(--line); background:#fff; color:var(--fg);
-      padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer;
-    }
-    .pinbtn.locked{background:var(--brand); color:#fff; border-color:var(--brand)}
-
-    /* 카드 */
-    .card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px; display:flex; flex-direction:column; gap:10px}
-
-    label{display:block; font-size:12px; font-weight:800; color:#3a4150; margin:0 0 6px 2px}
+    body{background:var(--bg); color:var(--fg); font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0}
+    .wrap{max-width:720px; padding:16px 16px 80px; margin:0 auto}
+    h1{font-size:20px; margin:12px 0 16px}
+    .card{background:#121316; border:1px solid var(--line); border-radius:16px; padding:14px}
+    .row{margin-bottom:12px}
+    label{display:block; font-weight:700; margin:0 0 6px 2px; font-size:14px}
     input,select,button{
-      font-size:15px; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
-      background:#fff; color:var(--fg); outline:none; width:100%;
+      font-size:16px; padding:12px 12px; border:1px solid var(--line); border-radius:12px; width:100%;
+      background:#0f1013; color:var(--fg); outline:none;
     }
-    input::placeholder{color:#9aa3b2}
-    button{cursor:pointer}
-    button.primary{background:var(--brand); color:#fff; border:none; font-weight:800}
-    button.secondary{background:#fff}
-
-    /* 첫 줄: 수의사 버튼 + 보호자이름 한 줄 */
-    .row-inline{display:flex; gap:8px; align-items:center}
-    .owner{min-width:120px; flex:1}
-
-    /* 수의사 버튼 그룹 (가로 스크롤 가능) */
-    .vets{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:2px}
-    .vet{flex:0 0 auto; padding:10px 12px; border:1px solid var(--line); background:#fff; border-radius:999px; font-size:14px; font-weight:700}
-    .vet.active{background:var(--brand-weak); border-color:#cddcff; color:#1d3a8a}
-
-    /* 두 번째 줄: 환자(짧게) + 제목(넓게) */
-    .row-pt-title{display:flex; gap:8px}
-    .patient{flex:0 0 90px} /* 한글 2~3자 고려한 폭 */
-    .titleinput{flex:1}
-    .hint{font-size:12px; color:var(--muted); margin-top:6px}
-
-    /* 파일 입력 + 툴바 */
-    .toolbar{display:flex; gap:8px}
-    .progress{height:8px; background:#f1f3f7; border:1px solid var(--line); border-radius:999px; overflow:hidden}
-    .bar{height:100%; width:0%; background:linear-gradient(90deg,#8bb3ff,#2e6bff)}
-
-    /* 리스트 (썸네일/진행) */
-    .list{display:flex; flex-direction:column; gap:6px; max-height:32vh; overflow:auto}
-    .item{display:flex; align-items:center; gap:8px; padding:6px; border:1px dashed var(--line); border-radius:10px}
-    .thumb{width:44px; height:44px; border-radius:8px; background:#fafbfe; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid var(--line)}
+    input::placeholder{color:#7b8088}
+    button{cursor:pointer; background:var(--brand); border:none; font-weight:700}
+    button:disabled{opacity:.6; cursor:not-allowed}
+    .muted{color:var(--muted); font-size:12px}
+    .toolbar{display:flex; gap:10px}
+    .toolbar > *{flex:1}
+    .progress{height:10px; background:#191b21; border:1px solid var(--line); border-radius:999px; overflow:hidden}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg,#5e8bff,#8ec5ff)}
+    .list{margin-top:12px}
+    .item{display:flex; align-items:center; gap:10px; padding:8px 6px; border-bottom:1px dashed var(--line)}
+    .thumb{width:48px; height:48px; border-radius:8px; background:#0d0e11; flex:0 0 auto; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid var(--line)}
     .thumb img{width:100%; height:100%; object-fit:cover}
     .meta{flex:1; min-width:0}
-    .name{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:13px; font-weight:700}
-    .sub{font-size:12px; color:var(--muted)}
-    .pill{font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line)}
-    .pill.ok{border-color:#c9f0dd; background:#effaf4; color:var(--ok)}
-    .pill.err{border-color:#ffd2d6; background:#fff2f3; color:var(--err)}
-    .pill.up{border-color:#d9e6ff; background:#f3f7ff; color:#2e6bff}
-    .pill.warn{border-color:#ffe8b3; background:#fff7df; color:#a57400}
-
-    .sumline{display:flex; gap:10px; justify-content:space-between; align-items:center; font-size:13px; color:#55607a}
-    .sumline b{color:var(--fg)}
-
-    /* 작은 화면에서 한 화면에 들어오도록 여백 최소화 */
-    @media (max-width: 390px){
-      .patient{flex-basis:80px}
-      .pinbtn{padding:8px 10px}
-    }
-
-    /* 모달 (PIN) */
-    .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35)}
-    .modal.show{display:flex}
-    .sheet{background:#fff; width:min(420px,92vw); border-radius:16px; border:1px solid var(--line); padding:14px; display:flex; flex-direction:column; gap:10px}
-    .sheet h3{margin:0; font-size:16px}
-    .sheet .actions{display:flex; gap:8px; justify-content:flex-end}
+    .meta .name{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14px}
+    .meta .sub{font-size:12px; color:var(--muted)}
+    .pill{font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--line)}
+    .pill.ok{border-color:rgba(52,199,89,.4); color:var(--ok)}
+    .pill.err{border-color:rgba(255,69,58,.4); color:var(--err)}
+    .pill.up{border-color:rgba(106,161,255,.5); color:#a7c5ff}
+    .footer{position:fixed; inset:auto 0 0 0; background:rgba(18,19,22,.9); border-top:1px solid var(--line); padding:8px 12px}
+    .sum{display:flex; gap:8px; justify-content:space-between; align-items:center}
+    .sum small{color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <!-- 헤더: 제목 + PIN 버튼 -->
-    <div class="header">
-      <div class="title">백산 이미지 업로더</div>
-      <button id="pinBtn" type="button" class="pinbtn" title="공용 PIN 설정">🔒 PIN</button>
-    </div>
+    <h1>BAEKSAN 이미지 업로더</h1>
 
     <div class="card">
-      <!-- 수의사 버튼 그룹 + 보호자 이름(선택) 한 줄 -->
-      <div class="row-inline">
-        <div style="flex:1; min-width:150px">
-          <label>수의사</label>
-          <div id="vets" class="vets" role="listbox" aria-label="수의사 선택">
-            <!-- ㄱㄴㄷ 순 버튼 -->
-            <button class="vet" data-name="김지현">김지현</button>
-            <button class="vet" data-name="김형준">김형준</button>
-            <button class="vet" data-name="문정현">문정현</button>
-            <button class="vet" data-name="민금주">민금주</button>
-            <button class="vet" data-name="박소민">박소민</button>
-            <button class="vet" data-name="송애라">송애라</button>
-            <button class="vet" data-name="유수민">유수민</button>
-            <button class="vet" data-name="이은지">이은지</button>
-            <button class="vet" data-name="이소민">이소민</button>
-            <button class="vet" data-name="정소연">정소연</button>
-            <button class="vet" data-name="조문주">조문주</button>
-            <button class="vet" data-name="한아름">한아름</button>
-          </div>
-        </div>
-        <div class="owner">
-          <label for="owner">보호자이름 (선택)</label>
-          <input id="owner" placeholder="예: 김호두" />
-        </div>
+      <div class="row">
+        <label for="pin">공용 PIN</label>
+        <input id="pin" inputmode="numeric" pattern="\d*" placeholder="병원 공용 PIN 코드" autocomplete="one-time-code" />
       </div>
 
-      <!-- 환자(짧게) + 제목(넓게) -->
-      <div class="row-pt-title">
-        <div class="patient">
-          <label for="patient">환자 *</label>
-          <input id="patient" placeholder="예: 냥냥" maxlength="5"/>
-        </div>
-        <div class="titleinput">
-          <label for="title">제목 *</label>
-          <input id="title" placeholder="예: 간FNA" />
-          <div class="hint">사용 안내: ① 수의사 선택 → ② 환자/제목 입력 → ③ 아래에서 사진 선택 후 “업로드”. 긴 변 2500px 초과 시 자동 축소. JPG/PNG만 지원.</div>
-        </div>
+      <div class="row">
+        <label for="vet">수의사</label>
+        <select id="vet">
+          <option value="">선택</option>
+          <!-- ㄱㄴㄷ 순 -->
+          <option>김지현</option><option>김형준</option>
+          <option>문정현</option><option>민금주</option>
+          <option>박소민</option><option>송애라</option>
+          <option>유수민</option><option>이은지</option><option>이소민</option>
+          <option>정소연</option><option>조문주</option><option>한아름</option>
+        </select>
       </div>
 
-      <!-- 파일 + 툴바 -->
-      <div>
+      <div class="row">
+        <label for="patient">환자이름 *</label>
+        <input id="patient" placeholder="예: 냥냥이" required />
+      </div>
+
+      <div class="row">
+        <label for="owner">보호자이름 (선택)</label>
+        <input id="owner" placeholder="예: 김호두" />
+      </div>
+
+      <div class="row">
+        <label for="title">제목 *</label>
+        <input id="title" placeholder="예: 간FNA" required />
+        <div class="muted">파일명: 환자_보호자?_YYYYMMDD_제목.jpg (PNG는 .png)</div>
+      </div>
+
+      <div class="row">
         <label for="file">사진 선택</label>
         <input id="file" type="file" accept="image/*" multiple />
+        <div class="muted">긴 변이 2500px 초과 시 자동 축소 (jpg/png)</div>
       </div>
 
-      <div class="toolbar">
-        <button id="uploadBtn" type="button" class="primary">📤 업로드</button>
-        <button id="clearBtn" type="button" class="secondary">🧹 초기화</button>
+      <div class="toolbar row">
+        <button id="uploadBtn" type="button">📤 업로드</button>
+        <button id="clearBtn" type="button" style="background:#2b2d32">🧹 초기화</button>
       </div>
 
-      <!-- 전체 진행률 -->
-      <div class="progress"><div id="overallBar" class="bar"></div></div>
-      <div class="sumline">
-        <div id="overallText">대기 중</div>
-        <div><b id="sumOk" style="color:var(--ok)">0 성공</b> · <b id="sumErr" style="color:var(--err)">0 실패</b></div>
+      <div class="row">
+        <div class="progress"><div id="overallBar" class="bar"></div></div>
+        <div class="muted" id="overallText">대기 중</div>
       </div>
 
-      <!-- 파일별 리스트 -->
       <div id="fileList" class="list"></div>
     </div>
   </div>
 
-  <!-- PIN 모달 -->
-  <div id="pinModal" class="modal" aria-hidden="true">
-    <div class="sheet">
-      <h3>공용 PIN 입력</h3>
-      <input id="pinInput" inputmode="numeric" pattern="\d*" placeholder="병원 공용 PIN 코드" autocomplete="one-time-code" />
-      <div class="actions">
-        <button id="pinCancel" class="secondary" type="button">취소</button>
-        <button id="pinSave" class="primary" type="button">확인</button>
+  <div class="footer">
+    <div class="sum">
+      <div>
+        <strong id="sumOk" style="color:var(--ok)">0 성공</strong> ·
+        <strong id="sumErr" style="color:var(--err)">0 실패</strong>
       </div>
+      <small id="hint">모바일 전용 · 네트워크 품질에 따라 시간이 걸릴 수 있어요</small>
     </div>
   </div>
 
   <script>
-    // ------- 상태/공용 함수 -------
+    // ---------- 공통 ----------
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
     const fmtBytes = n => n<1024? `${n} B` : n<1024**2? `${(n/1024).toFixed(1)} KB` : `${(n/1024**2).toFixed(1)} MB`;
     const todayYYYYMMDD = () => { const d=new Date(), p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}`; };
 
-    let PIN = "";   // 상단 PIN 버튼으로 설정
-
-    // ------- PIN 모달 -------
-    const pinBtn = $('#pinBtn');
-    const pinModal = $('#pinModal');
-    const pinInput = $('#pinInput');
-    $('#pinCancel').onclick = ()=> pinModal.classList.remove('show');
-    $('#pinSave').onclick = ()=> {
-      PIN = (pinInput.value || "").trim();
-      pinModal.classList.remove('show');
-      pinBtn.textContent = PIN ? '🔓 PIN' : '🔒 PIN';
-      pinBtn.classList.toggle('locked', !!PIN);
-    };
-    pinBtn.onclick = ()=>{
-      pinInput.value = PIN;
-      pinModal.classList.add('show');
-      pinInput.focus();
-    };
-    pinModal.addEventListener('click', (e)=>{ if(e.target===pinModal) pinModal.classList.remove('show'); });
-
-    // ------- 수의사 버튼 그룹 -------
-    let VET = "";
-    $('#vets').addEventListener('click', (e)=>{
-      const btn = e.target.closest('.vet');
-      if(!btn) return;
-      $$('#vets .vet').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      VET = btn.dataset.name;
-    });
-
-    // ------- 이미지 리사이즈 (Safari 호환, 2500 초과시에만) -------
+    // ---------- 이미지 리사이즈 (Safari 호환, 2500 초과시에만) ----------
     async function resizeIfNeeded(file){
       const isPNG = /png$/i.test(file.type);
       const isJPG = /jpe?g$/i.test(file.type);
@@ -257,7 +163,7 @@
       return new File([blob], base+ext, {type:mime,lastModified:Date.now()});
     }
 
-    // ------- 업로드(XHR 진행률) -------
+    // ---------- 업로드 도우미 (XHR로 진행률 받기) ----------
     function xhrUpload(formData, onProgress){
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -273,7 +179,7 @@
       });
     }
 
-    // ------- UI 엘리먼트 -------
+    // ---------- UI 요소 ----------
     const overallBar = $('#overallBar');
     const overallText = $('#overallText');
     const list = $('#fileList');
@@ -282,9 +188,7 @@
     const sumOk = $('#sumOk'); const sumErr = $('#sumErr');
 
     function setDisabled(disabled){
-      [btnUpload, $('#owner'), $('#patient'), $('#title'), $('#file')].forEach(el => el.disabled = disabled);
-      $$('#vets .vet').forEach(el => el.disabled = disabled);
-      pinBtn.disabled = disabled;
+      [btnUpload, $('#pin'), $('#vet'), $('#patient'), $('#owner'), $('#title'), $('#file')].forEach(el => el.disabled = disabled);
       btnUpload.textContent = disabled ? '⏳ 업로드 중…' : '📤 업로드';
     }
     function setOverall(p, text){ overallBar.style.width = `${Math.max(0,Math.min(100, p*100))}%`; overallText.textContent = text; }
@@ -306,24 +210,23 @@
       const pill = el.querySelector('.pill');
       return {
         setProgress: (r)=>{ bar.style.width = `${Math.round(r*100)}%`; },
-        setStatus: (type, text)=>{ pill.className = `pill ${type}`; pill.textContent = text; },
+        setStatus: (type, text)=>{
+          pill.className = `pill ${type}`; pill.textContent = text;
+        },
         cleanup: ()=> URL.revokeObjectURL(url)
       };
     }
 
     btnClear.addEventListener('click', ()=>{
       list.innerHTML=''; setOverall(0,'대기 중'); sumOk.textContent='0 성공'; sumErr.textContent='0 실패';
-      $('#file').value=''; // 입력값은 그대로 둠
+      $('#file').value='';
     });
 
     btnUpload.addEventListener('click', async ()=>{
-      const vet = VET;
-      const owner = $('#owner').value.trim();
-      const patient = $('#patient').value.trim();
-      const title = $('#title').value.trim();
+      const pin=$('#pin').value.trim(), vet=$('#vet').value.trim(), patient=$('#patient').value.trim(), owner=$('#owner').value.trim(), title=$('#title').value.trim();
       const files = Array.from($('#file').files);
 
-      if(!PIN) return alert('상단 PIN 버튼을 눌러 공용 PIN을 입력하세요');
+      if(!pin) return alert('공용 PIN을 입력하세요');
       if(!vet) return alert('수의사를 선택하세요');
       if(!patient) return alert('환자이름은 필수입니다');
       if(!title) return alert('제목을 입력하세요');
@@ -336,7 +239,7 @@
       let ok=0, err=0;
       const ymd = todayYYYYMMDD();
 
-      // 순차 업로드
+      // 순차 업로드 (안정성 ↑, Dropbox rate-limit 안전)
       for(let i=0;i<files.length;i++){
         const f = files[i];
         const ui = addItemPreview(f);
@@ -345,16 +248,19 @@
         // 리사이즈
         let rf = f;
         try{
+          const t0 = performance.now();
           rf = await resizeIfNeeded(f);
-          ui.setStatus('up', rf!==f ? '리사이즈 완료' : '원본 유지');
+          const resized = rf !== f;
+          ui.setStatus('up', resized ? '리사이즈 완료' : '원본 유지');
         }catch(e){
           ui.setStatus('warn','리사이즈 실패, 원본');
-          rf = f;
         }
 
+        // 힌트 파일명
         const hintName = `${patient}${owner?`_${owner}`:''}_${ymd}_${title}` + (rf.type==='image/png'?'.png':'.jpg');
+
         const form = new FormData();
-        form.append('pin', PIN);
+        form.append('pin', pin);
         form.append('vet', vet);
         form.append('patient', patient);
         form.append('owner', owner);
