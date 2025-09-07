@@ -9,11 +9,11 @@
 
 ## 환경변수
 - `DROPBOX_APP_KEY`, `DROPBOX_APP_SECRET`, `DROPBOX_REFRESH_TOKEN`
-- `PIN_CODE`: 공용 업로드 PIN (기본 6364 로 제공)
+- `PIN_CODE`: 공용 업로드 PIN
 - `ALLOWED_ORIGINS`: CORS 허용 도메인(쉼표 구분). 현재 설정: https://bs-image-uploader.vercel.app
 
 ## 보안/정책
-- 화이트리스트된 수의사만 업로드 가능
+- 화이트리스트된 수의사폴더로만 업로드 가능
 - 확장자: jpg/jpeg/png
 - 최대 40MB (클라에서 2500px 리사이즈 권장)
 - 덮어쓰기 방지(`mode: add, autorename: true`)
