@@ -16,78 +16,111 @@
       --radius:14px; --shadow:0 6px 14px rgba(23,38,58,.06);
     }
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      overflow-x:hidden; /* 가로 스크롤 방지 */
+    }
 
-    .wrap{max-width:760px;margin:0 auto;padding:12px;display:grid;row-gap:12px}
+    .wrap{
+      width:100%; max-width:560px; /* 모바일 최적화 폭 */
+      margin:0 auto; padding:12px;
+      display:grid; row-gap:12px;
+    }
 
-    /* 1) 로고 + 제목 */
-    .row1{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}
-    .logo{width:32px;height:32px;border-radius:8px;overflow:hidden;background:#e6eef9;display:flex;align-items:center;justify-content:center}
-    .logo img{width:100%;height:100%;object-fit:cover}
-    .title{font-size:20px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* 1) 로고 + 제목 (더 크고 그림자) */
+    .row1{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .brand{display:flex; align-items:center; gap:10px; min-width:0}
+    .logo{width:34px; height:34px; border-radius:8px; overflow:hidden; background:#e6eef9; display:flex; align-items:center; justify-content:center}
+    .logo img{width:100%; height:100%; object-fit:cover}
+    .title{
+      font-size:24px; font-weight:900; letter-spacing:-.3px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      text-shadow: 0 1px 0 #fff, 0 4px 10px rgba(43,95,163,.15);
+    }
 
     /* 2) 안내 + PIN */
-    .row2{display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .guide{font-size:13px;color:var(--muted);line-height:1.35}
-    .pinbtn{border:1px solid var(--line);background:#fff;color:var(--fg);padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap;font-size:16px}
-    .pinbtn.locked{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .row2{display:flex; align-items:center; justify-content:space-between; gap:8px}
+    .guide{font-size:13px; color:var(--muted); line-height:1.35}
+    .pinbtn{
+      border:1px solid var(--line); background:#fff; color:var(--fg);
+      padding:10px 14px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:var(--shadow);
+      white-space:nowrap; font-size:16px
+    }
+    .pinbtn.locked{background:var(--brand); color:#fff; border-color:var(--brand)}
 
     /* 카드 */
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);display:grid;row-gap:10px}
-    label{display:block;font-size:14px;font-weight:800;color:#334155;margin:0 0 6px 2px}
-    input,button{font-size:17px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--fg);outline:none;min-width:0}
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+      padding:12px; box-shadow:var(--shadow);
+      display:grid; row-gap:10px;
+    }
+    label{display:block; font-size:14px; font-weight:800; color:#334155; margin:0 0 6px 2px}
+    input,button{
+      font-size:17px; padding:12px; border:1px solid var(--line); border-radius:10px;
+      background:#fff; color:var(--fg); outline:none; min-width:0;
+    }
     input::placeholder{color:#96a0b0}
     button{cursor:pointer}
-    .btn-primary{background:var(--brand);color:#fff;border:none;font-weight:800}
-    .btn-secondary{background:#fff;border:1px solid var(--line);font-weight:800}
+    .btn-primary{background:var(--brand); color:#fff; border:none; font-weight:800}
+    .btn-secondary{background:#fff; border:1px solid var(--line); font-weight:800}
 
-    /* 3) 수의사/보호자 5:5 */
-    .row3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .vets{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding:8px;border:1px dashed var(--line);border-radius:10px;background:#fff;max-height:110px;overflow:auto}
-    .vet{flex:0 0 auto;padding:10px 12px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:16px;font-weight:700;white-space:nowrap}
-    .vet.active{background:var(--brand-weak);border-color:#c7d6ee;color:#1f3f73}
+    /* 3) 수의사: 6열 × 2행 고정 그리드 (총 12명) */
+    .vets-grid{
+      display:grid; grid-template-columns:repeat(6, 1fr); grid-auto-rows:44px; gap:8px;
+    }
+    .vet{
+      display:flex; align-items:center; justify-content:center;
+      padding:0 8px; border:1px solid var(--line); background:#fff; border-radius:999px;
+      font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .vet.active{background:var(--brand-weak); border-color:#c7d6ee; color:#1f3f73}
 
-    /* 4) 환자/제목 3:7 */
-    .row4{display:grid;grid-template-columns:3fr 7fr;gap:10px}
+    /* 4) 환자 & 보호자 (5:5) */
+    .rowPB{display:grid; grid-template-columns:1fr 1fr; gap:10px}
 
-    /* 5) 파일선택 + 업로드 (항상 보이게) */
-    .row5{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
-    #file{display:none} /* 기본 파일 입력 숨기고 라벨 버튼화 */
-    .choose{display:inline-block;text-align:center}
-    .choose, .btn-primary{padding:12px 16px}
-    .choose{border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:800}
+    /* 5) 제목 (한 줄) */
+    .rowTitle{display:block}
+
+    /* 6) 파일 선택 + 업로드 (항상 보이게) */
+    .rowUpload{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center}
+    #file{display:none}
+    .choose{display:inline-block; text-align:center; padding:12px 16px; border:1px solid var(--line); border-radius:10px; background:#fff; font-weight:800}
     .choose:active{transform:translateY(1px)}
 
-    /* 진행률/요약 */
-    .progress{height:10px;background:#f1f3f7;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-    .bar{height:100%;width:0%;background:linear-gradient(90deg,#9bb8db,var(--brand))}
-    .sumline{display:flex;gap:10px;justify-content:space-between;align-items:center;font-size:15px;color:#4f5a6d}
-
-    /* 파일 리스트 */
-    .list{display:flex;flex-direction:column;gap:8px;max-height:28vh;overflow:auto}
-    .item{display:flex;align-items:center;gap:10px;padding:8px;border:1px dashed var(--line);border-radius:10px;background:#fff}
-    .thumb{width:44px;height:44px;border-radius:8px;background:#f7f9fc;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--line)}
-    .thumb img{width:100%;height:100%;object-fit:cover}
-    .meta{flex:1;min-width:0}
-    .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px;font-weight:700}
-    .sub{font-size:13px;color:var(--muted)}
-    .pill{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
-    .pill.ok{border-color:#c9f0dd;background:#effaf4;color:var(--ok)}
-    .pill.err{border-color:#ffd2d6;background:#fff2f3;color:var(--err)}
-    .pill.up{border-color:#d9e6ff;background:#f3f7ff;color:var(--brand)}
-    .pill.warn{border-color:#ffe8b3;background:#fff7df;color:#8a5f00}
+    /* 진행/요약/리스트 */
+    .progress{height:10px; background:#f1f3f7; border:1px solid var(--line); border-radius:999px; overflow:hidden}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg,#9bb8db,var(--brand))}
+    .sumline{display:flex; gap:10px; justify-content:space-between; align-items:center; font-size:15px; color:#4f5a6d}
+    .list{display:flex; flex-direction:column; gap:8px; max-height:28vh; overflow:auto}
+    .item{display:flex; align-items:center; gap:10px; padding:8px; border:1px dashed var(--line); border-radius:10px; background:#fff}
+    .thumb{width:44px; height:44px; border-radius:8px; background:#f7f9fc; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid var(--line)}
+    .thumb img{width:100%; height:100%; object-fit:cover}
+    .meta{flex:1; min-width:0}
+    .name{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:15px; font-weight:700}
+    .sub{font-size:13px; color:var(--muted)}
+    .pill{font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--line); white-space:nowrap}
+    .pill.ok{border-color:#c9f0dd; background:#effaf4; color:var(--ok)}
+    .pill.err{border-color:#ffd2d6; background:#fff2f3; color:var(--err)}
+    .pill.up{border-color:#d9e6ff; background:#f3f7ff; color:var(--brand)}
+    .pill.warn{border-color:#ffe8b3; background:#fff7df; color:#8a5f00}
 
     /* PIN 모달 */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}
+    .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35)}
     .modal.show{display:flex}
-    .sheet{background:#fff;width:min(420px,92vw);border-radius:16px;border:1px solid var(--line);padding:14px;display:flex;flex-direction:column;gap:12px}
-    .sheet h3{margin:0;font-size:18px}
-    .sheet .actions{display:flex;gap:10px;justify-content:flex-end}
+    .sheet{background:#fff; width:min(420px,92vw); border-radius:16px; border:1px solid var(--line); padding:14px; display:flex; flex-direction:column; gap:12px}
+    .sheet h3{margin:0; font-size:18px}
+    .sheet .actions{display:flex; gap:10px; justify-content:flex-end}
 
-    @media (max-width:380px){
-      .row4{grid-template-columns:1fr 2fr}
+    /* 아주 작은 화면 보정(가로 스크롤 방지) */
+    @media (max-width:360px){
+      .wrap{padding:10px}
+      .vet{font-size:14px}
+      .vets-grid{grid-auto-rows:40px; gap:6px}
+      .title{font-size:22px}
       .guide{font-size:12px}
+      input,button{font-size:16px}
     }
   </style>
 </head>
@@ -103,53 +136,54 @@
 
     <!-- 2) 안내 + PIN -->
     <div class="row2">
-      <div class="guide">안내: ① 수의사 선택 → ② 환자/제목 입력 → ③ 사진 선택 후 업로드. 긴 변 2000px 초과 시 자동 축소(JPG/PNG).</div>
+      <div class="guide">안내: ① 수의사 선택 → ② 환자/보호자/제목 입력 → ③ 사진 선택 후 업로드. 긴 변 2000px 초과 시 자동 축소(JPG/PNG).</div>
       <button id="pinBtn" type="button" class="pinbtn">🔒 PIN</button>
     </div>
 
     <div class="card">
-      <!-- 3) 수의사/보호자 -->
-      <div class="row3">
-        <div>
-          <label>수의사</label>
-          <div id="vets" class="vets" role="listbox" aria-label="수의사 선택">
-            <!-- 전체 목록(여러 줄) -->
-            <button class="vet" data-name="김형준">김형준</button>
-            <button class="vet" data-name="김지현">김지현</button>
-            <button class="vet" data-name="문정현">문정현</button>
-            <button class="vet" data-name="민금주">민금주</button>
-            <button class="vet" data-name="박소민">박소민</button>
-            <button class="vet" data-name="송애라">송애라</button>
-            <button class="vet" data-name="유수민">유수민</button>
-            <button class="vet" data-name="이소민">이소민</button>
-            <button class="vet" data-name="이은지">이은지</button>
-            <button class="vet" data-name="정소연">정소연</button>
-            <button class="vet" data-name="조문주">조문주</button>
-            <button class="vet" data-name="한아름">한아름</button>
-          </div>
-        </div>
-        <div>
-          <label for="owner">보호자이름 (선택)</label>
-          <input id="owner" placeholder="선택사항" />
+      <!-- 수의사 6×2 고정 그리드 -->
+      <div>
+        <label>수의사</label>
+        <div id="vets" class="vets-grid" role="listbox" aria-label="수의사 선택">
+          <button class="vet" data-name="김형준">김형준</button>
+          <button class="vet" data-name="김지현">김지현</button>
+          <button class="vet" data-name="문정현">문정현</button>
+          <button class="vet" data-name="민금주">민금주</button>
+          <button class="vet" data-name="박소민">박소민</button>
+          <button class="vet" data-name="송애라">송애라</button>
+          <button class="vet" data-name="유수민">유수민</button>
+          <button class="vet" data-name="이소민">이소민</button>
+          <button class="vet" data-name="이은지">이은지</button>
+          <button class="vet" data-name="정소연">정소연</button>
+          <button class="vet" data-name="조문주">조문주</button>
+          <button class="vet" data-name="한아름">한아름</button>
         </div>
       </div>
 
-      <!-- 4) 환자/제목 -->
-      <div class="row4">
+      <!-- 환자 & 보호자 (5:5) -->
+      <div class="rowPB">
         <div>
           <label for="patient">환자 *</label>
           <input id="patient" placeholder="예: 냥냥" maxlength="5" />
         </div>
-        <div class="titlebox">
-          <label for="title">제목 *</label>
-          <input id="title" placeholder="예: 간FNA" />
+        <div>
+          <label for="owner">보호자 (선택)</label>
+          <input id="owner" placeholder="선택사항" />
         </div>
       </div>
 
-      <!-- 5) 파일 + 업로드 (항상 노출) -->
-      <div class="row5">
-        <input id="file" type="file" accept="image/*" multiple />
-        <label for="file" class="choose">📷 사진 선택</label>
+      <!-- 제목 (한 줄) -->
+      <div class="rowTitle">
+        <label for="title">제목 *</label>
+        <input id="title" placeholder="예: 간FNA" />
+      </div>
+
+      <!-- 파일 선택 + 업로드 -->
+      <div class="rowUpload">
+        <div>
+          <input id="file" type="file" accept="image/*" multiple />
+          <label for="file" class="choose">📷 사진 선택</label>
+        </div>
         <button id="uploadBtn" type="button" class="btn-primary">📤 업로드</button>
       </div>
 
@@ -197,7 +231,7 @@
     pinBtn.onclick = ()=>{ pinInput.value = PIN; pinModal.classList.add('show'); pinInput.focus(); };
     pinModal.addEventListener('click', e=>{ if(e.target===pinModal) pinModal.classList.remove('show'); });
 
-    // ===== 수의사 버튼 (이벤트 위임) =====
+    // ===== 수의사 버튼 (위임, 먹통 방지) =====
     const vetsEl = $('#vets');
     vetsEl.addEventListener('click', e=>{
       const btn = e.target.closest('.vet');
@@ -263,14 +297,15 @@
     // ===== 진행/UI =====
     const overallBar = $('#overallBar'), overallText = $('#overallText'), list = $('#fileList'), btnUpload = $('#uploadBtn');
     const sumOk = $('#sumOk'), sumErr = $('#sumErr');
+    const fileInput = $('#file'), chooseBtn = document.querySelector('.choose');
 
     function setDisabled(disabled){
       [btnUpload, $('#owner'), $('#patient'), $('#title')].forEach(el => el.disabled = disabled);
       $$('#vets .vet').forEach(el => el.disabled = disabled);
       pinBtn.disabled = disabled;
       btnUpload.textContent = disabled ? '⏳ 업로드 중…' : '📤 업로드';
-      document.querySelector('.choose').style.pointerEvents = disabled ? 'none' : 'auto';
-      document.querySelector('.choose').style.opacity = disabled ? .6 : 1;
+      chooseBtn.style.pointerEvents = disabled ? 'none' : 'auto';
+      chooseBtn.style.opacity = disabled ? .6 : 1;
     }
     function setOverall(p, text){ overallBar.style.width = `${Math.max(0,Math.min(100,p*100))}%`; overallText.textContent = text; }
 
@@ -296,9 +331,6 @@
       };
     }
 
-    // 파일 선택시 선택 개수 안내(버튼 텍스트로)
-    const fileInput = $('#file');
-    const chooseBtn = document.querySelector('.choose');
     fileInput.addEventListener('change', ()=>{
       const n = fileInput.files?.length || 0;
       chooseBtn.textContent = n>0 ? `📷 ${n}개 선택됨` : '📷 사진 선택';
@@ -333,6 +365,7 @@
           ui.setStatus('up', rf!==f ? '리사이즈 완료' : '원본 유지');
         }catch(e){
           ui.setStatus('warn','리사이즈 실패, 원본');
+          rf = f;
         }
 
         const hintName = `${patient}${owner?`_${owner}`:''}_${ymd}_${title}` + (rf.type==='image/png'?'.png':'.jpg');
