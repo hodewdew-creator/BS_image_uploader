@@ -56,18 +56,35 @@ async function getDropboxAccessToken(){
 }
 
 async function uploadToDropbox(token, path, buffer){
+  // ❶ 원래 JSON 만들고
+  const apiArg = JSON.stringify({
+    path,
+    mode: "add",
+    autorename: true,
+    mute: true
+  });
+
+  // ❷ 한글/비ASCII를 안전하게 URL-인코딩
+  const safeArg = encodeURI(apiArg);
+
   const up = await fetch("https://content.dropboxapi.com/2/files/upload", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`,
-      "Dropbox-API-Arg": JSON.stringify({ path, mode:"add", autorename:true, mute:true }),
+      // ❸ 인코딩된 값을 헤더에 넣기
+      "Dropbox-API-Arg": safeArg,
       "Content-Type": "application/octet-stream"
     },
     body: buffer
   });
-  if (!up.ok) throw new Error("Dropbox upload 실패: " + await up.text());
+
+  if (!up.ok) {
+    const t = await up.text();
+    throw new Error("Dropbox upload 실패: " + t);
+  }
   return up.json();
 }
+
 
 export default async function handler(req, res){
   try {
