@@ -2,45 +2,149 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>진단 모드</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <title>백산 FORCAT 사진 업로드</title>
   <style>
-    body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:16px}
-    button{font-size:16px;padding:10px 14px}
-    #status{white-space:pre-wrap;font-size:14px;background:#f9fafb;border:1px solid #eee;border-radius:8px;padding:10px;min-height:64px;margin-top:12px}
+    body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;padding:16px;line-height:1.4}
+    .row{margin-bottom:12px}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input,select,button{font-size:16px;padding:10px;border:1px solid #ddd;border-radius:10px;width:100%}
+    button{cursor:pointer}
+    small{color:#666}
+    .grid{display:grid;gap:12px}
   </style>
 </head>
 <body>
-  <h2>진단 모드 — 클릭/스크립트/네트워크 확인</h2>
-  <p>아래 버튼을 누르면 로그가 순서대로 찍혀야 정상입니다.</p>
-  <button id="ping" type="button">진단 버튼</button>
-  <pre id="status"></pre>
+  <h2>백산 FORCAT 사진 업로드</h2>
+  <div class="grid">
+    <div class="row">
+      <label for="pin">공용 PIN</label>
+      <input id="pin" inputmode="numeric" pattern="\d*" placeholder="병원 공용 PIN 코드" />
+    </div>
+    <div class="row">
+      <label for="vet">수의사</label>
+<select id="vet">
+  <option value="">선택</option>
+  <option>김지현</option>
+  <option>김형준</option>
+  <option>문정현</option>
+  <option>민금주</option>
+  <option>박소민</option>
+  <option>송애라</option>
+  <option>유수민</option>
+  <option>이은지</option>
+  <option>이소민</option>
+  <option>정소연</option>
+  <option>조문주</option>
+  <option>한아름</option>
+</select>
+
+    </div>
+    <div class="row">
+      <label for="patient">환자이름 <span style="color:#c00">*</span></label>
+      <input id="patient" placeholder="예: 냥냥이" required />
+    </div>
+    <div class="row">
+      <label for="owner">보호자이름 (선택)</label>
+      <input id="owner" placeholder="예: 김호두" />
+    </div>
+    <div class="row">
+      <label for="title">제목 <span style="color:#c00">*</span></label>
+      <input id="title" placeholder="예: 간FNA" required />
+      <small>최종 파일명: 환자_보호자?_YYYYMMDD_제목.jpg</small>
+    </div>
+    <div class="row">
+      <label for="file">사진 촬영/선택</label>
+      <input id="file" type="file" accept="image/*" capture="environment" multiple />
+      <small>업로드 시 자동으로 긴 변 2500px로 압축됩니다.</small>
+    </div>
+    <button id="upload">업로드</button>
+    <pre id="status" style="white-space:pre-wrap;font-size:14px"></pre>
+  </div>
 
   <script>
-    const $ = id => document.getElementById(id);
-    const log = m => { const s=$('status'); s.textContent += (s.textContent?'\n':'') + m; };
+    // 이미지 리사이즈(긴 변 2500px, JPEG 0.9). PNG는 PNG로 유지.
+    async function resizeIfNeeded(file){
+      const isPNG = file.type === 'image/png';
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/jpg';
+      if(!isPNG && !isJPG) return file; // 허용된 확장자만 서버에서 검사
 
-    window.addEventListener('error', e => log('❌ window.error: ' + e.message));
-    log('✅ 스크립트 로드됨');
+      const bmp = await createImageBitmap(file);
+      const max = 2500;
+      const long = Math.max(bmp.width, bmp.height);
+      if(long <= max) return file;
 
-    $('ping').addEventListener('click', async () => {
-      log('➡️ 클릭 이벤트 수신, /api/upload POST 테스트 시작');
-      try {
+      const scale = max / long;
+      const w = Math.round(bmp.width * scale);
+      const h = Math.round(bmp.height * scale);
+
+      const canvas = new OffscreenCanvas(w, h);
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.drawImage(bmp, 0, 0, w, h);
+
+      const mime = isPNG ? 'image/png' : 'image/jpeg';
+      const quality = isPNG ? undefined : 0.9;
+
+      const blob = await canvas.convertToBlob({ type: mime, quality });
+      const ext = isPNG ? '.png' : '.jpg';
+      const base = file.name.replace(/\.\w+$/, '');
+      return new File([blob], base + ext, { type: mime, lastModified: Date.now() });
+    }
+
+    function todayYYYYMMDD(){
+      const d = new Date();
+      const p = n => String(n).padStart(2,'0');
+      return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}`;
+    }
+
+    document.getElementById('upload').onclick = async () => {
+      const status = document.getElementById('status');
+      status.textContent = '';
+
+      const pin = document.getElementById('pin').value.trim();
+      const vet = document.getElementById('vet').value.trim();
+      const patient = document.getElementById('patient').value.trim();
+      const owner = document.getElementById('owner').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const files = [...document.getElementById('file').files];
+
+      if(!pin){ alert('공용 PIN을 입력하세요'); return; }
+      if(!vet){ alert('수의사를 선택하세요'); return; }
+      if(!patient){ alert('환자이름은 필수입니다'); return; }
+      if(!title){ alert('제목을 입력하세요'); return; }
+      if(files.length===0){ alert('사진을 선택/촬영하세요'); return; }
+
+      const ymd = todayYYYYMMDD();
+
+      for(const f of files){
+        const rf = await resizeIfNeeded(f);
+        // 서버에서 최종 파일명을 만들지만, 힌트로 원래 이름에 반영
+        const hintName = `${patient}${owner?`_${owner}`:''}_${ymd}_${title}` + (rf.type==='image/png'?'.png':'.jpg');
+
         const form = new FormData();
-        form.append('pin','6364');
-        form.append('vet','김지현');
-        form.append('patient','진단환자');
-        form.append('owner','진단보호자');
-        form.append('title','진단제목');
-        // 파일은 의도적으로 안 넣음 (서버가 JSON으로 에러 내려주는지 확인)
-        const res = await fetch('/api/upload', { method: 'POST', body: form });
-        const ct = res.headers.get('content-type') || '';
-        const body = ct.includes('application/json') ? await res.json() : { ok:false, error: await res.text() };
-        log('⬅️ 서버 응답: ' + JSON.stringify(body));
-      } catch (e) {
-        log('❌ 네트워크 예외: ' + e.message);
+        form.append('pin', pin);
+        form.append('vet', vet);
+        form.append('patient', patient);
+        form.append('owner', owner);
+        form.append('title', title);
+        form.append('file', rf, hintName);
+
+        try{
++ const res = await fetch('/api/upload', { method: 'POST', body: form });
++ const ct = res.headers.get('content-type') || '';
++ const json = ct.includes('application/json')
++   ? await res.json()
++   : { ok:false, error: await res.text() };
+          if(json.ok){
+            status.textContent += `✅ 업로드 완료: ${json.path}\n`;
+          }else{
+            status.textContent += `❌ 실패: ${json.error}\n`;
+          }
+        }catch(e){
+          status.textContent += `❌ 네트워크 오류: ${e.message}\n`;
+        }
       }
-    });
+    };
   </script>
 </body>
 </html>
