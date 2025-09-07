@@ -1,10 +1,6 @@
 {
   "cleanUrls": true,
   "redirects": [
-    {
-      "source": "/",
-      "destination": "/public/upload.html",
-      "permanent": false
-    }
+    { "source": "/", "destination": "/index.html", "permanent": false }
   ]
 }
