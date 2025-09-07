@@ -3,93 +3,139 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
-  <title>백산 FORCAT 사진 업로드</title>
+  <title>BAEKSAN 이미지 업로더</title>
+
+  <!-- 모바일 웹앱 메타 -->
+  <meta name="theme-color" content="#111">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <style>
-    body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;padding:16px;line-height:1.4}
+    :root{
+      --bg:#0b0b0c; --fg:#f2f3f5; --muted:#a0a4ab; --line:#1f2126;
+      --brand:#6aa1ff; --ok:#34c759; --err:#ff453a; --warn:#ffcc00;
+    }
+    *{box-sizing:border-box}
+    body{background:var(--bg); color:var(--fg); font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0}
+    .wrap{max-width:720px; padding:16px 16px 80px; margin:0 auto}
+    h1{font-size:20px; margin:12px 0 16px}
+    .card{background:#121316; border:1px solid var(--line); border-radius:16px; padding:14px}
     .row{margin-bottom:12px}
-    label{display:block;font-weight:600;margin-bottom:6px}
-    input,select,button{font-size:16px;padding:10px;border:1px solid #ddd;border-radius:10px;width:100%}
-    button{cursor:pointer}
-    small{color:#666}
-    .grid{display:grid;gap:12px}
-    #status{white-space:pre-wrap;font-size:14px;background:#f9fafb;border:1px solid #eee;border-radius:8px;padding:10px;min-height:64px}
+    label{display:block; font-weight:700; margin:0 0 6px 2px; font-size:14px}
+    input,select,button{
+      font-size:16px; padding:12px 12px; border:1px solid var(--line); border-radius:12px; width:100%;
+      background:#0f1013; color:var(--fg); outline:none;
+    }
+    input::placeholder{color:#7b8088}
+    button{cursor:pointer; background:var(--brand); border:none; font-weight:700}
+    button:disabled{opacity:.6; cursor:not-allowed}
+    .muted{color:var(--muted); font-size:12px}
+    .toolbar{display:flex; gap:10px}
+    .toolbar > *{flex:1}
+    .progress{height:10px; background:#191b21; border:1px solid var(--line); border-radius:999px; overflow:hidden}
+    .bar{height:100%; width:0%; background:linear-gradient(90deg,#5e8bff,#8ec5ff)}
+    .list{margin-top:12px}
+    .item{display:flex; align-items:center; gap:10px; padding:8px 6px; border-bottom:1px dashed var(--line)}
+    .thumb{width:48px; height:48px; border-radius:8px; background:#0d0e11; flex:0 0 auto; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid var(--line)}
+    .thumb img{width:100%; height:100%; object-fit:cover}
+    .meta{flex:1; min-width:0}
+    .meta .name{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14px}
+    .meta .sub{font-size:12px; color:var(--muted)}
+    .pill{font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--line)}
+    .pill.ok{border-color:rgba(52,199,89,.4); color:var(--ok)}
+    .pill.err{border-color:rgba(255,69,58,.4); color:var(--err)}
+    .pill.up{border-color:rgba(106,161,255,.5); color:#a7c5ff}
+    .footer{position:fixed; inset:auto 0 0 0; background:rgba(18,19,22,.9); border-top:1px solid var(--line); padding:8px 12px}
+    .sum{display:flex; gap:8px; justify-content:space-between; align-items:center}
+    .sum small{color:var(--muted)}
   </style>
 </head>
 <body>
-  <h2>백산 FORCAT 사진 업로드</h2>
-  <div class="grid">
-    <div class="row">
-      <label for="pin">공용 PIN</label>
-      <input id="pin" inputmode="numeric" pattern="\d*" placeholder="병원 공용 PIN 코드(예: 6364)" />
-    </div>
+  <div class="wrap">
+    <h1>BAEKSAN 이미지 업로더</h1>
 
-    <div class="row">
-      <label for="vet">수의사</label>
-      <select id="vet">
-        <option value="">선택</option>
-        <option>김지현</option>
-        <option>김형준</option>
-        <option>문정현</option>
-        <option>민금주</option>
-        <option>박소민</option>
-        <option>송애라</option>
-        <option>유수민</option>
-        <option>이은지</option>
-        <option>이소민</option>
-        <option>정소연</option>
-        <option>조문주</option>
-        <option>한아름</option>
-      </select>
-    </div>
+    <div class="card">
+      <div class="row">
+        <label for="pin">공용 PIN</label>
+        <input id="pin" inputmode="numeric" pattern="\d*" placeholder="병원 공용 PIN 코드" autocomplete="one-time-code" />
+      </div>
 
-    <div class="row">
-      <label for="patient">환자이름 *</label>
-      <input id="patient" placeholder="예: 냥냥이" required />
-    </div>
+      <div class="row">
+        <label for="vet">수의사</label>
+        <select id="vet">
+          <option value="">선택</option>
+          <!-- ㄱㄴㄷ 순 -->
+          <option>김지현</option><option>김형준</option>
+          <option>문정현</option><option>민금주</option>
+          <option>박소민</option><option>송애라</option>
+          <option>유수민</option><option>이은지</option><option>이소민</option>
+          <option>정소연</option><option>조문주</option><option>한아름</option>
+        </select>
+      </div>
 
-    <div class="row">
-      <label for="owner">보호자이름 (선택)</label>
-      <input id="owner" placeholder="예: 김호두" />
-    </div>
+      <div class="row">
+        <label for="patient">환자이름 *</label>
+        <input id="patient" placeholder="예: 냥냥이" required />
+      </div>
 
-    <div class="row">
-      <label for="title">제목 *</label>
-      <input id="title" placeholder="예: 간FNA" required />
-      <small>최종 파일명: 환자_보호자?_YYYYMMDD_제목.jpg (PNG는 .png)</small>
-    </div>
+      <div class="row">
+        <label for="owner">보호자이름 (선택)</label>
+        <input id="owner" placeholder="예: 김호두" />
+      </div>
 
-    <div class="row">
-      <label for="file">사진 촬영/선택</label>
-      <input id="file" type="file" accept="image/*" capture="environment" multiple />
-      <small>긴 변이 2500px 초과할 때만 자동으로 줄입니다. (jpg/png)</small>
-    </div>
+      <div class="row">
+        <label for="title">제목 *</label>
+        <input id="title" placeholder="예: 간FNA" required />
+        <div class="muted">파일명: 환자_보호자?_YYYYMMDD_제목.jpg (PNG는 .png)</div>
+      </div>
 
-    <button id="upload" type="button">업로드</button>
-    <pre id="status"></pre>
+      <div class="row">
+        <label for="file">사진 선택</label>
+        <input id="file" type="file" accept="image/*" multiple />
+        <div class="muted">긴 변이 2500px 초과 시 자동 축소 (jpg/png)</div>
+      </div>
+
+      <div class="toolbar row">
+        <button id="uploadBtn" type="button">📤 업로드</button>
+        <button id="clearBtn" type="button" style="background:#2b2d32">🧹 초기화</button>
+      </div>
+
+      <div class="row">
+        <div class="progress"><div id="overallBar" class="bar"></div></div>
+        <div class="muted" id="overallText">대기 중</div>
+      </div>
+
+      <div id="fileList" class="list"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="sum">
+      <div>
+        <strong id="sumOk" style="color:var(--ok)">0 성공</strong> ·
+        <strong id="sumErr" style="color:var(--err)">0 실패</strong>
+      </div>
+      <small id="hint">모바일 전용 · 네트워크 품질에 따라 시간이 걸릴 수 있어요</small>
+    </div>
   </div>
 
   <script>
-    const $ = id => document.getElementById(id);
-    const log = m => { const s=$('status'); s.textContent += (s.textContent?'\n':'') + m; };
+    // ---------- 공통 ----------
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const fmtBytes = n => n<1024? `${n} B` : n<1024**2? `${(n/1024).toFixed(1)} KB` : `${(n/1024**2).toFixed(1)} MB`;
+    const todayYYYYMMDD = () => { const d=new Date(), p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}`; };
 
-    window.addEventListener('error', e => log('❌ window.error: ' + e.message));
-    log('✅ 스크립트 로드됨');
-
-    function todayYYYYMMDD(){
-      const d=new Date(); const p=n=>String(n).padStart(2,'0');
-      return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}`;
-    }
-
-    // Safari 호환 리사이즈 (Image+canvas). 긴 변 2500px 초과시에만 줄이기
+    // ---------- 이미지 리사이즈 (Safari 호환, 2500 초과시에만) ----------
     async function resizeIfNeeded(file){
-      const isPNG = file.type === 'image/png';
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/jpg';
+      const isPNG = /png$/i.test(file.type);
+      const isJPG = /jpe?g$/i.test(file.type);
       if(!isPNG && !isJPG) return file;
 
       const url = URL.createObjectURL(file);
       const img = await new Promise((resolve, reject) => {
         const i = new Image();
-        i.onload = () => resolve(i);
+        i.onload = ()=>resolve(i);
         i.onerror = reject;
         i.src = url;
       });
@@ -100,53 +146,119 @@
       if(long <= max) return file;
 
       const scale = max / long;
-      const w = Math.round(img.naturalWidth * scale);
-      const h = Math.round(img.naturalHeight * scale);
-
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d', { alpha:false });
-      ctx.drawImage(img, 0, 0, w, h);
+      const w = Math.round(img.naturalWidth*scale), h = Math.round(img.naturalHeight*scale);
+      const canvas = document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      const ctx = canvas.getContext('2d', {alpha:false});
+      ctx.drawImage(img,0,0,w,h);
 
       const mime = isPNG ? 'image/png' : 'image/jpeg';
       const quality = isPNG ? undefined : 0.9;
 
-      const blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), mime, quality);
+      const blob = await new Promise((resolve,reject)=>{
+        canvas.toBlob(b => b?resolve(b):reject(new Error('toBlob failed')), mime, quality);
       });
 
-      const ext = isPNG ? '.png' : '.jpg';
-      const base = file.name.replace(/\.\w+$/, '');
-      return new File([blob], base + ext, { type: mime, lastModified: Date.now() });
+      const ext = isPNG?'.png':'.jpg';
+      const base = file.name.replace(/\.[a-z0-9]+$/i,'');
+      return new File([blob], base+ext, {type:mime,lastModified:Date.now()});
     }
 
-    $('upload').addEventListener('click', async () => {
-      log('➡️ 업로드 시작');
-      const pin = $('pin').value.trim();
-      const vet = $('vet').value.trim();
-      const patient = $('patient').value.trim();
-      const owner = $('owner').value.trim();
-      const title = $('title').value.trim();
-      const files = [...$('file').files];
+    // ---------- 업로드 도우미 (XHR로 진행률 받기) ----------
+    function xhrUpload(formData, onProgress){
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/upload', true);
+        xhr.responseType = 'json';
+        xhr.upload.onprogress = e => { if(e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
+        xhr.onload = () => {
+          const res = xhr.response ?? (()=>{ try{ return JSON.parse(xhr.responseText) } catch{ return {ok:false,error:xhr.responseText||xhr.statusText}; }})();
+          resolve({ status: xhr.status, body: res });
+        };
+        xhr.onerror = () => reject(new Error('네트워크 오류'));
+        xhr.send(formData);
+      });
+    }
 
-      if(!pin){ alert('공용 PIN을 입력하세요'); return; }
-      if(!vet){ alert('수의사를 선택하세요'); return; }
-      if(!patient){ alert('환자이름은 필수입니다'); return; }
-      if(!title){ alert('제목을 입력하세요'); return; }
-      if(files.length===0){ alert('사진을 선택/촬영하세요'); return; }
+    // ---------- UI 요소 ----------
+    const overallBar = $('#overallBar');
+    const overallText = $('#overallText');
+    const list = $('#fileList');
+    const btnUpload = $('#uploadBtn');
+    const btnClear = $('#clearBtn');
+    const sumOk = $('#sumOk'); const sumErr = $('#sumErr');
 
+    function setDisabled(disabled){
+      [btnUpload, $('#pin'), $('#vet'), $('#patient'), $('#owner'), $('#title'), $('#file')].forEach(el => el.disabled = disabled);
+      btnUpload.textContent = disabled ? '⏳ 업로드 중…' : '📤 업로드';
+    }
+    function setOverall(p, text){ overallBar.style.width = `${Math.max(0,Math.min(100, p*100))}%`; overallText.textContent = text; }
+
+    function addItemPreview(file){
+      const url = URL.createObjectURL(file);
+      const el = document.createElement('div'); el.className='item';
+      el.innerHTML = `
+        <div class="thumb"><img src="${url}" alt=""></div>
+        <div class="meta">
+          <div class="name">${file.name}</div>
+          <div class="sub">${fmtBytes(file.size)}</div>
+          <div class="progress" style="margin-top:6px"><div class="bar"></div></div>
+        </div>
+        <div class="pill up">대기</div>
+      `;
+      list.appendChild(el);
+      const bar = el.querySelector('.bar');
+      const pill = el.querySelector('.pill');
+      return {
+        setProgress: (r)=>{ bar.style.width = `${Math.round(r*100)}%`; },
+        setStatus: (type, text)=>{
+          pill.className = `pill ${type}`; pill.textContent = text;
+        },
+        cleanup: ()=> URL.revokeObjectURL(url)
+      };
+    }
+
+    btnClear.addEventListener('click', ()=>{
+      list.innerHTML=''; setOverall(0,'대기 중'); sumOk.textContent='0 성공'; sumErr.textContent='0 실패';
+      $('#file').value='';
+    });
+
+    btnUpload.addEventListener('click', async ()=>{
+      const pin=$('#pin').value.trim(), vet=$('#vet').value.trim(), patient=$('#patient').value.trim(), owner=$('#owner').value.trim(), title=$('#title').value.trim();
+      const files = Array.from($('#file').files);
+
+      if(!pin) return alert('공용 PIN을 입력하세요');
+      if(!vet) return alert('수의사를 선택하세요');
+      if(!patient) return alert('환자이름은 필수입니다');
+      if(!title) return alert('제목을 입력하세요');
+      if(files.length===0) return alert('사진을 선택하세요');
+
+      // UI 준비
+      list.innerHTML='';
+      setDisabled(true);
+      setOverall(0,'준비 중…');
+      let ok=0, err=0;
       const ymd = todayYYYYMMDD();
 
-      for(const f of files){
+      // 순차 업로드 (안정성 ↑, Dropbox rate-limit 안전)
+      for(let i=0;i<files.length;i++){
+        const f = files[i];
+        const ui = addItemPreview(f);
+        ui.setStatus('up','준비 중');
+
+        // 리사이즈
         let rf = f;
-        try {
+        try{
+          const t0 = performance.now();
           rf = await resizeIfNeeded(f);
-        } catch(e) {
-          log(`⚠️ 리사이즈 실패, 원본 업로드: ${e.message}`);
-          rf = f;
+          const resized = rf !== f;
+          ui.setStatus('up', resized ? '리사이즈 완료' : '원본 유지');
+        }catch(e){
+          ui.setStatus('warn','리사이즈 실패, 원본');
         }
 
+        // 힌트 파일명
         const hintName = `${patient}${owner?`_${owner}`:''}_${ymd}_${title}` + (rf.type==='image/png'?'.png':'.jpg');
+
         const form = new FormData();
         form.append('pin', pin);
         form.append('vet', vet);
@@ -155,16 +267,30 @@
         form.append('title', title);
         form.append('file', rf, hintName);
 
+        // 업로드
+        ui.setStatus('up','업로드 중');
         try{
-          const res = await fetch('/api/upload', { method: 'POST', body: form });
-          const ct = res.headers.get('content-type') || '';
-          const body = ct.includes('application/json') ? await res.json() : { ok:false, error: await res.text() };
-          if(body.ok) log(`✅ 업로드 완료: ${body.path}`);
-          else log(`❌ 실패: ${body.error || res.statusText}`);
+          const res = await xhrUpload(form, r=>{
+            ui.setProgress(r);
+            setOverall((i + r) / files.length, `전체 ${i+1}/${files.length} 업로드 중…`);
+          });
+          if(res.body && res.body.ok){
+            ok++; ui.setProgress(1); ui.setStatus('ok','완료');
+          }else{
+            err++; ui.setStatus('err', res.body?.error || '실패');
+          }
         }catch(e){
-          log(`❌ 네트워크 오류: ${e.message}`);
+          err++; ui.setStatus('err', e.message || '네트워크 오류');
+        }finally{
+          ui.cleanup();
+          sumOk.textContent = `${ok} 성공`;
+          sumErr.textContent = `${err} 실패`;
         }
       }
+
+      setDisabled(false);
+      setOverall(1, err===0 ? '모든 업로드 완료' : `완료(성공 ${ok}, 실패 ${err})`);
+      if(err===0){ $('#file').value=''; }
     });
   </script>
 </body>
