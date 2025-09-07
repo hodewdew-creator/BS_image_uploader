@@ -121,8 +121,11 @@
         form.append('file', rf, hintName);
 
         try{
-          const res = await fetch('/api/upload', { method: 'POST', body: form });
-          const json = await res.json();
++ const res = await fetch('/api/upload', { method: 'POST', body: form });
++ const ct = res.headers.get('content-type') || '';
++ const json = ct.includes('application/json')
++   ? await res.json()
++   : { ok:false, error: await res.text() };
           if(json.ok){
             status.textContent += `✅ 업로드 완료: ${json.path}\n`;
           }else{
