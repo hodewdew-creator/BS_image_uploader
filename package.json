@@ -1,12 +1,9 @@
+
 {
   "name": "forcat-dropbox-uploader",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "start": "vercel dev"
-  },
-  "dependencies": {
-    "formidable": "^3.5.1"
-  }
+  "scripts": { "start": "vercel dev" },
+  "dependencies": { "formidable": "^3.5.1" }
 }
