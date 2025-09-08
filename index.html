@@ -77,11 +77,11 @@
 
     /* 수의사: 5열 × 2행 고정 그리드 (스크롤 없음, 버튼 살짝 작게) */
     .vets-grid{
-      display:grid; grid-template-columns:repeat(4, 1fr); grid-auto-rows:36px; gap:7px;
+      display:grid; grid-template-columns:repeat(4); grid-auto-rows:36px; gap:7px;
     }
     .vet{
       display:flex; align-items:center; justify-content:center;
-      padding:0 2px;
+      padding:0 0px;
       border:1px solid var(--line); background:#fff; border-radius:999px;
       font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
