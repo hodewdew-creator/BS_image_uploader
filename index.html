@@ -93,6 +93,28 @@
   }
   .pinbtn.locked{background:var(--brand); color:#fff; border-color:var(--brand)}
 
+<!-- 2) 안내 + PIN -->
+
+.row2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 좌측 텍스트 / 우측 버튼 */
+  gap: 8px;
+}
+
+.guide {
+  flex: 1;                       /* 남는 공간을 guide가 채움 */
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+  min-width: 0;                  /* 줄바꿈 허용 */
+  overflow-wrap: anywhere;       /* 긴 문구도 강제로 줄바꿈 */
+}
+
+.pinbtn {
+  flex: 0 0 auto;                /* 버튼은 자기 크기만 유지 */
+}
+  
   /* 3) 수의사 버튼 */
   .vets-grid{
     display:grid;
@@ -187,7 +209,8 @@
     text-decoration: underline;
     word-break: break-all; /* 링크 줄바꿈 */
   }
-  
+
+
 </style>
 
 
@@ -205,10 +228,13 @@
     </div>
 
     <!-- 2) 안내 + PIN -->
-    <div class="row2">
-      <div class="guide"> * 이미지(JPG/PNG) 가로 2000px 초과 → 자동 축소. </div>
-      <button id="pinBtn" type="button" class="pinbtn">🔒 PIN</button>
-    </div>
+<div class="row2">
+  <div class="guide">
+    * 이미지(JPG/PNG) 가로 2000px 초과 → 자동 축소. <br>
+    * 처치표-수의사 개인폴더내 '환자명_날짜_제목'로 저장.
+  </div>
+  <button id="pinBtn" type="button" class="pinbtn">🔒 PIN</button>
+</div>
 
     <div class="card">
       <div>
