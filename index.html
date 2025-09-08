@@ -101,7 +101,7 @@
   }
   .vet{
     display:flex; align-items:center; justify-content:center;
-    padding:0 8px;  color:#483D8B;
+    padding:0 8px;  color:#4169E1;
     border:1px solid var(--line); background:#fff; border-radius:999px;
     font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     min-width:0;
@@ -178,18 +178,17 @@
     <div class="row1">
       <div class="brand">
         <div class="logo"><img src="/logo.png" alt="BAEKSAN" onerror="this.style.display='none'"></div>
-        <div class="title">Image Uploader</div>
+        <div class="title"> 이미지 업로더 </div>
       </div>
     </div>
 
     <!-- 2) 안내 + PIN -->
     <div class="row2">
-      <div class="guide"> *이미지(JPG/PNG) 긴 변 2000px 초과 시 자동 축소.</div>
+      <div class="guide"> * 이미지(JPG/PNG) 가로 2000px 초과 → 자동 축소. </div>
       <button id="pinBtn" type="button" class="pinbtn">🔒 PIN</button>
     </div>
 
     <div class="card">
-      <!-- 수의사 5×2 고정 그리드 -->
       <div>
         <label>수의사</label>
         <div id="vets" class="vets-grid" role="listbox" aria-label="수의사 선택">
