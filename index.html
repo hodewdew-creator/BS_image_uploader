@@ -9,34 +9,63 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <style>
+ <style>
   :root{
     --bg:#f7f9fc; --card:#fff; --fg:#0b0f16; --muted:#5f6a7b; --line:#e3e8f0;
     --brand:#2b5fa3; --brand-weak:#eaf1fb;
-    --active-bg:#fff9c4;   /* 옅은 노랑 */
-    --active-bd:#ffe58f;
-    --active-fg:#7a5e00;
+    --active-bg:#fff9c4; --active-bd:#ffe58f; --active-fg:#7a5e00;
     --ok:#118a55; --err:#c52a2a;
     --radius:14px; --shadow:0 6px 14px rgba(23,38,58,.06);
-    --fs-label:14px;
-    --fs-input:16px; /* 모바일에서 안전한 기본 입력 폰트 */
+    --fs-label:14px; --fs-input:16px;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--fg);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    overflow-x:hidden; /* 가로 스크롤 차단 */
+    overflow-x:hidden;
   }
 
-  /* 래퍼: 폭을 뷰포트에 맞춰 고정 (iPhone/갤럭시 기준) */
+  /* 래퍼 (모바일 안전폭) */
   .wrap{
-    width:100%;
-    max-width:430px;        /* 모바일 기준 안전폭 */
-    margin:0 auto;
+    width:100%; max-width:430px; margin:0 auto; padding:12px;
+    display:grid; row-gap:12px; overflow-x:clip;
+  }
+
+  /* 카드 */
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
     padding:12px;
-    display:grid; row-gap:12px;
-    overflow-x:clip;        /* 추가: 넘침 차단 */
+    max-width:100%;
+  }
+
+  /* 공통: 라벨/입력/버튼 */
+  label{display:block; font-size:var(--fs-label); color:var(--muted); margin:6px 0 6px 2px; font-weight:700}
+  input, button{
+    font-size:var(--fs-input);
+  }
+  input{
+    width:100%; height:44px; padding:10px 12px;
+    border:1px solid var(--line); border-radius:10px;
+    background:#fff; color:var(--fg);
+    outline:none;
+  }
+  input:focus{border-color:#c9daf4; box-shadow:0 0 0 3px rgba(43,95,163,.12)}
+
+  .btn-primary{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    min-height:44px; padding:10px 16px; border-radius:10px;
+    background:var(--brand); color:#fff; border:1px solid var(--brand);
+    box-shadow:var(--shadow); cursor:pointer;
+  }
+  .btn-secondary{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:44px; padding:10px 16px; border-radius:10px;
+    background:#fff; color:var(--fg); border:1px solid var(--line);
+    box-shadow:var(--shadow); cursor:pointer;
   }
 
   /* 1) 로고 + 제목 */
@@ -47,7 +76,7 @@
   .title{
     font-size:31px; font-weight:900; letter-spacing:-.3px;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    text-shadow: 0 1px 0 #fff, 0 4px 12px rgba(43,95,163,.18);
+    text-shadow:0 1px 0 #fff, 0 4px 12px rgba(43,95,163,.18);
   }
 
   /* 2) 안내 + PIN */
@@ -67,12 +96,12 @@
   /* 3) 수의사 버튼 */
   .vets-grid{
     display:grid;
-    grid-template-columns:repeat(4, minmax(0, 1fr)); /* 수정 */
+    grid-template-columns:repeat(4, minmax(0,1fr)); /* 넘침 방지 */
     grid-auto-rows:36px; gap:7px;
   }
   .vet{
     display:flex; align-items:center; justify-content:center;
-    padding:0 0px;
+    padding:0 8px;  /* 살짝 좌우 여백 복구 */
     border:1px solid var(--line); background:#fff; border-radius:999px;
     font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     min-width:0;
@@ -86,13 +115,10 @@
   .rowTitle{display:block;}
 
   /* 6) 파일 선택 + 업로드 */
-  .rowUpload{
-    display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center;
-  }
+  .rowUpload{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; }
   .rowUpload > div:first-child{ min-width:0; }
-
-  /* 공용 선택 버튼 */
-  .choose{display:inline-block; text-align:center; padding:12px 16px;
+  .choose{
+    display:inline-block; text-align:center; padding:12px 16px;
     border:1px solid var(--line); border-radius:10px; background:#fff; font-weight:800; white-space:nowrap;
     max-width:100%; overflow:hidden; text-overflow:ellipsis;
   }
@@ -102,8 +128,8 @@
   .progress .bar{background:var(--brand); height:100%; width:0%}
   .sumline{display:flex; justify-content:space-between; align-items:center; font-size:14px}
   .list{display:flex; flex-direction:column; gap:8px}
-  .item{background:#f7f9fc; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid var(--line)}
-  .thumb{width:72px; height:72px; flex:none; background:#f7f9fc; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid var(--line)}
+  .item{background:#f7f9fc; display:flex; align-items:center; gap:10px; padding:8px; border:1px solid var(--line); border-radius:10px}
+  .thumb{width:72px; height:72px; flex:none; background:#f7f9fc; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid var(--line); border-radius:8px}
   .thumb img{width:100%; height:100%; object-fit:cover}
   .meta{flex:1; min-width:0}
   .name{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:14px; font-weight:700}
@@ -121,7 +147,7 @@
   .sheet h3{margin:0; font-size:18px}
   .sheet .actions{display:flex; gap:10px; justify-content:flex-end}
 
-  /* 공통 미디어 */
+  /* 미디어 공통 */
   img, video, canvas, iframe{max-width:100%; height:auto}
 
   /* 더 작은 화면 보정 */
@@ -134,6 +160,7 @@
     .pinbtn{font-size:15px}
   }
 </style>
+
 
 </head>
 <body>
